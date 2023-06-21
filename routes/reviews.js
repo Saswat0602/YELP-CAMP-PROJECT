@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 const { isLoggedIn } = require("../middleware");
-
+//ISLOGGEDIN CHECK THE USER IS LOGGED IN OR NOT IF USER IS NOT LOGGEDIN REDDIRECT IT TO LOGIN PAGE
 
 const Campground = require("../models/campground");
 const Review = require("../models/review");
@@ -10,6 +10,11 @@ const { reviewSchema } = require("../schema.js");
 
 const ExpressError = require("../utils/ExpressError");
 const catchAsync = require("../utils/catchAsync");
+
+
+
+//VALIDATE THE REVIEW THAT USER FILL ALL THE REQUIREMENT S OR NOT
+
 
 const validateReview = (req, res, next) => {
   const { error } = reviewSchema.validate(req.body);
@@ -34,6 +39,9 @@ router.post(
     res.redirect(`/campgrounds/${campground._id}`);
   })
 );
+
+
+
 
 router.delete(
   "/:reviewId",

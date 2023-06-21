@@ -10,7 +10,7 @@ const passport = require('passport')
 const LocalStrategy = require("passport-local");
 const User = require("./models/user");
 
-
+//PASSPORT IS USED FOR HASHING THE PASSWORD
 
 
 // const Campground = require("./models/campground");
@@ -97,20 +97,23 @@ app.get("/", (req, res) => {
 
 
 
-app.get ('/fakeUser',async(req,res)=>{
-  const user = new User ({email:'sas12@gmail.com',username:'sam'})
-  const newUser = await User.register(user, 'sam')
-  res.send(newUser)
-})
+// app.get ('/fakeUser',async(req,res)=>{
+//   const user = new User ({email:'sas12@gmail.com',username:'sam'})
+//   const newUser = await User.register(user, 'sam')
+//   res.send(newUser)
+// })
 
 
 
 
 
+
+//ERROR HANDELING BASIC
 
 app.all("*", (req, res, next) => {
   res.send(new ExpressError("page Not Found", 404));
 });
+
 
 
 app.use((err, req, res, next) => {

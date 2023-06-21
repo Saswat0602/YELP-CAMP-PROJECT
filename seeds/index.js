@@ -1,3 +1,6 @@
+// RETRIVE THE CITIES FROM CITIES JS AND STORE IT IN MONGO AS WELL AS SHOW IT IN CAMP GROUND PAGES
+
+
 
 const mongoose = require("mongoose");
 const cities = require('./cities')
