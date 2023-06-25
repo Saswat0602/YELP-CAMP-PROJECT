@@ -1,37 +1,21 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
-const { isLoggedIn } = require("../middleware");
 //ISLOGGEDIN CHECK THE USER IS LOGGED IN OR NOT IF USER IS NOT LOGGEDIN REDDIRECT IT TO LOGIN PAGE
-
+const { validateReview, isLoggedIn, isReviewAuthor } = require("../middleware");
 const Campground = require("../models/campground");
 const Review = require("../models/review");
-
-const { reviewSchema } = require("../schema.js");
-
 const ExpressError = require("../utils/ExpressError");
 const catchAsync = require("../utils/catchAsync");
 
 
-
-//VALIDATE THE REVIEW THAT USER FILL ALL THE REQUIREMENT S OR NOT
-
-
-const validateReview = (req, res, next) => {
-  const { error } = reviewSchema.validate(req.body);
-  if (error) {
-    const msg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(msg, 400);
-  } else {
-    next();
-  }
-};
-
 router.post(
   "/",
- isLoggedIn, validateReview,
+  isLoggedIn,
+  validateReview,
   catchAsync(async (req, res) => {
     const campground = await Campground.findById(req.params.id);
     const review = new Review(req.body.review);
+    review.author = req.user._id;
     campground.reviews.push(review);
     await review.save();
     await campground.save();
@@ -40,12 +24,11 @@ router.post(
   })
 );
 
-
-
-
 router.delete(
   "/:reviewId",
-  isLoggedIn, catchAsync(async (req, res) => {
+  isLoggedIn,
+  isReviewAuthor,
+  catchAsync(async (req, res) => {
     const { id, reviewId } = req.params;
     await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
     await Review.findByIdAndDelete(reviewId);
@@ -53,5 +36,6 @@ router.delete(
     res.redirect(`/campgrounds/${id}`);
   })
 );
+
 
 module.exports = router;
