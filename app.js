@@ -1,3 +1,9 @@
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
+
+
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
@@ -6,21 +12,20 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const methodOverride = require("method-override");
 const ExpressError = require("./utils/ExpressError");
-const passport = require('passport')
+const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user");
 
 //PASSPORT IS USED FOR HASHING THE PASSWORD
-
 
 // const Campground = require("./models/campground");
 // const { campgroundSchema, reviewSchema } = require("./schema.js");
 // const catchAsync = require("./utils/catchAsync");
 // const Review = require("./models/review");
 
-const userRoutes = require('./routes/users')
-const campgroundRoutes= require('./routes/campgrounds')
-const reviewRoutes = require('./routes/reviews')
+const userRoutes = require("./routes/users");
+const campgroundRoutes = require("./routes/campgrounds");
+const reviewRoutes = require("./routes/reviews");
 
 //make connection with mongo
 mongoose.connect("mongodb://localhost:27017/yelp-camp");
@@ -30,9 +35,7 @@ db.once("open", () => {
   console.log("database connecteed");
 });
 
-
 const app = express();
-
 
 // connect with ejs files
 
@@ -43,10 +46,7 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
-app.use(express.static (path.join(__dirname,'public')))
-
-
-
+app.use(express.static(path.join(__dirname, "public")));
 
 const sessionConfig = {
   secret: "this  is top secret",
@@ -59,43 +59,32 @@ const sessionConfig = {
   },
 };
 
-
-
 app.use(session(sessionConfig));
 app.use(flash());
-
 
 app.use(passport.initialize());
 app.use(passport.session());
 //authenticate from user from model/user
 passport.use(new LocalStrategy(User.authenticate()));
 
-
-
 //store on  session
-passport.deserializeUser(User.deserializeUser());//remove from session
+passport.deserializeUser(User.deserializeUser()); //remove from session
 passport.serializeUser(User.serializeUser());
 
-
-
 app.use((req, res, next) => {
-  res.locals.currentUser = req.user
+  res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   next();
 });
 
-
-app.use('/',userRoutes)
+app.use("/", userRoutes);
 app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/reviews", reviewRoutes);
-
 
 app.get("/", (req, res) => {
   res.render("home");
 });
-
-
 
 // app.get ('/fakeUser',async(req,res)=>{
 //   const user = new User ({email:'sas12@gmail.com',username:'sam'})
@@ -103,26 +92,17 @@ app.get("/", (req, res) => {
 //   res.send(newUser)
 // })
 
-
-
-
-
-
 //ERROR HANDELING BASIC
 
 app.all("*", (req, res, next) => {
   res.send(new ExpressError("page Not Found", 404));
 });
 
-
-
 app.use((err, req, res, next) => {
   const { stausCode = 500, message = "something went wrong" } = err;
   res.status(stausCode);
   res.render("error", { err });
 });
-
-
 
 app.listen(3000, () => {
   console.log("listining on port 3000");
