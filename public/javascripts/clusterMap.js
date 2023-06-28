@@ -1,12 +1,15 @@
 mapboxgl.accessToken =
   "pk.eyJ1Ijoic2Fzd2F0MDYwMiIsImEiOiJjbGpkenNzbHMwMnhxM2twYnZka21xcHBmIn0.NW0inY2mB3oDt5b4XMXZmQ";
 const map = new mapboxgl.Map({
-  container: "map",
+  container: "cluster-map",
   // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
-  style: "mapbox://styles/mapbox/dark-v11",
+  style: "mapbox://styles/mapbox/streets-v10",
   center: [-103.5917, 40.6699],
   zoom: 3,
 });
+
+
+map.addControl(new mapboxgl.NavigationControl());
 
 
 
