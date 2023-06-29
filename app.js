@@ -13,25 +13,26 @@ const ExpressError = require("./utils/ExpressError");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user");
+const userRoutes = require("./routes/users");
+const campgroundRoutes = require("./routes/campgrounds");
+const reviewRoutes = require("./routes/reviews");
 const helmet = require("helmet");
 
 
 const mongoSanitize = require("express-mongo-sanitize");
 
+const MongoStore = require("connect-mongo");
 
-//PASSPORT IS USED FOR HASHING THE PASSWORD
 
-// const Campground = require("./models/campground");
-// const { campgroundSchema, reviewSchema } = require("./schema.js");
-// const catchAsync = require("./utils/catchAsync");
-// const Review = require("./models/review");
 
-const userRoutes = require("./routes/users");
-const campgroundRoutes = require("./routes/campgrounds");
-const reviewRoutes = require("./routes/reviews");
+
+
 
 //make connection with mongo
-mongoose.connect("mongodb://localhost:27017/yelp-camp");
+// process.env.DB_URL;
+const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/yelp-camp";
+
+mongoose.connect(dbUrl);
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection Error"));
 db.once("open", () => {
@@ -59,10 +60,22 @@ app.use(
 );
 
 
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  touchAfter: 24 * 60 * 60,
+  crypto: {
+    secret: "thisshouldbeabettersecret!",
+  },
+});
+
+store.on("error",function(e){
+  console.log("session store error");
+})
 
 const sessionConfig = {
+  store,
   name: "session",
-  secret: "this  is top secret",
+  secret: "thisshouldbeabettersecret",
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -76,6 +89,8 @@ const sessionConfig = {
 
 app.use(session(sessionConfig));
 app.use(flash());
+
+
 // app.use(helmet())
 
 // const scriptSrcUrls = [
@@ -152,11 +167,7 @@ app.get("/", (req, res) => {
   res.render("home");
 });
 
-// app.get ('/fakeUser',async(req,res)=>{
-//   const user = new User ({email:'sas12@gmail.com',username:'sam'})
-//   const newUser = await User.register(user, 'sam')
-//   res.send(newUser)
-// })
+
 
 //ERROR HANDELING BASIC
 
