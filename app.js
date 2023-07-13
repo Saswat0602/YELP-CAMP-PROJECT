@@ -26,8 +26,6 @@ const MongoStore = require("connect-mongo");
 
 
 
-
-
 //make connection with mongo
 // process.env.DB_URL;
 const dbUrl =  process.env.DB_UR || "mongodb://localhost:27017/yelp-camp";
@@ -159,6 +157,8 @@ app.use((req, res, next) => {
   next();
 });
 
+
+
 app.use("/", userRoutes);
 app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/reviews", reviewRoutes);
@@ -166,8 +166,6 @@ app.use("/campgrounds/:id/reviews", reviewRoutes);
 app.get("/", (req, res) => {
   res.render("home");
 });
-
-
 
 //ERROR HANDELING BASIC
 
