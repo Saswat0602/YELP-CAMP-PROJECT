@@ -24,11 +24,9 @@ const mongoSanitize = require("express-mongo-sanitize");
 const MongoStore = require("connect-mongo");
 
 
-
-
 //make connection with mongo
 // process.env.DB_URL;
-const dbUrl =  process.env.DB_UR || "mongodb://localhost:27017/yelp-camp";
+const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/yelp-camp";
 
 mongoose.connect(dbUrl);
 const db = mongoose.connection;
@@ -147,8 +145,9 @@ app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 
 //store on  session
-passport.deserializeUser(User.deserializeUser()); //remove from session
 passport.serializeUser(User.serializeUser());
+//remove from session
+passport.deserializeUser(User.deserializeUser()); 
 
 app.use((req, res, next) => {
   res.locals.currentUser = req.user;
@@ -179,6 +178,6 @@ app.use((err, req, res, next) => {
   res.render("error", { err });
 });
 
-app.listen(3000, () => {
-  console.log("listining on port 3000");
+app.listen(5000, () => {
+  console.log("listining on port 5000");
 });

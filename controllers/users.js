@@ -19,9 +19,10 @@ module.exports.register = async (req, res, next) => {
       req.flash("success", "Welcome to Yelp Camp!");
       res.redirect("/campgrounds");
     });
+    //store the url that was visited before login in session object for redirection after successful authentication
   } catch (e) {
     req.flash("error", e.message);
-    res.redirect("register");
+    res.redirect("/register");
   }
 };
 
@@ -46,7 +47,7 @@ module.exports.logout = (req, res, next) => {
       return next(err);
     }
     req.flash("success", "Goodbye!");
-    res.redirect("/campgrounds");
+    res.redirect("/");
   });
 };
 
